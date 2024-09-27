@@ -23,7 +23,20 @@ def central_difference(f: Any, *vals: Any, arg: int = 0, epsilon: float = 1e-6) 
         An approximation of $f'_i(x_0, \ldots, x_{n-1})$
     """
     # TODO: Implement for Task 1.1.
-    raise NotImplementedError("Need to implement for Task 1.1")
+    
+    # Convert the vals tuple to a list to modify
+    vals_plus_epsilon = list(vals)
+    vals_minus_epsilon = list(vals)
+    
+    # Increment and decrement the value at index `arg`
+    vals_plus_epsilon[arg] += epsilon
+    vals_minus_epsilon[arg] -= epsilon
+    
+    # Compute the central difference approximation
+    f_plus = f(*vals_plus_epsilon)
+    f_minus = f(*vals_minus_epsilon)
+    
+    return (f_plus - f_minus) / (2 * epsilon)
 
 
 variable_count = 1
@@ -61,8 +74,22 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
     Returns:
         Non-constant Variables in topological order starting from the right.
     """
-    # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    order: List[Variable] = []
+    seen = set()
+
+    def visit(var: Variable) -> None:
+        if var.unique_id in seen or var.is_constant():
+            return
+        if not var.is_leaf():
+            for m in var.parents:
+                if not m.is_constant():
+                    visit(m)
+        seen.add(var.unique_id)
+        order.append(var)  # Use append here
+
+    visit(variable)
+    return reversed(order)  # Reverse the order at the end
+
 
 
 def backpropagate(variable: Variable, deriv: Any) -> None:
@@ -77,8 +104,60 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     No return. Should write to its results to the derivative values of each leaf through `accumulate_derivative`.
     """
     # TODO: Implement for Task 1.4.
-    raise NotImplementedError("Need to implement for Task 1.4")
+    
+    # # First, get the topological order of variables
 
+    # topological_order = topological_sort(variable)
+    
+    # # Initialize a dictionary to store the derivatives of each variable
+    # derivatives = {variable.unique_id: deriv}
+    
+    # # Iterate over the variables in reverse topological order
+    # for var in topological_order:
+    #     # Get the derivative for the current variable
+    #     d_output = derivatives.get(var, 0)
+        
+    #     # If the variable is a leaf, accumulate the derivative
+    #     if var.is_leaf():
+    #         var.accumulate_derivative(d_output)
+    #     else:
+    #         # Otherwise, propagate the derivative to the parents using the chain rule
+    #         for parent, local_derivative in var.chain_rule(d_output):
+    #             # Accumulate the derivative for each parent
+    #             if parent in derivatives:
+    #                 derivatives[parent] += local_derivative
+    #             else:
+    #                 derivatives[parent] = local_derivative
+
+    # Step 1: Get the topological order of the computation graph
+    queue = topological_sort(variable)
+
+    # Step 2: Initialize a dictionary to store derivatives
+    derivatives = {}
+
+    # Step 3: Set the derivative for the output variable
+    derivatives[variable.unique_id] = deriv
+
+    # Step 4: Iterate over the variables in the queue (in reverse topological order)
+    for var in queue:
+        # Get the current derivative of this variable
+        deriv = derivatives[var.unique_id]
+
+        # If it's a leaf node, accumulate its derivative
+        if var.is_leaf():
+            var.accumulate_derivative(deriv)
+
+        # Otherwise, propagate the derivative backward using the chain rule
+        else:
+            for v, d in var.chain_rule(deriv):
+                if v.is_constant():
+                    continue
+
+                # Step 5: Use setdefault to initialize the derivative if it doesn't exist
+                derivatives.setdefault(v.unique_id, 0.0)
+
+                # Step 6: Add the current contribution to the derivative
+                derivatives[v.unique_id] += d
 
 @dataclass
 class Context:

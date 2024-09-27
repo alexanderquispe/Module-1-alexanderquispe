@@ -15,3 +15,21 @@ python sync_previous_module.py previous-module-dir current-module-dir
 The files that will be synced are:
 
         minitorch/operators.py minitorch/module.py tests/test_module.py tests/test_operators.py project/run_manual.py
+
+
+## output training logs
+
+1. Simple.png 
+* ![Simple](./Simple.png)
+2. Diag.png 
+* ![Diag](./Diag.png)
+3. Xor.png 
+* ![Xor](./Xor.png)
+4. Spiral.png 
+* ![Spiral](./Spiral.png)
+
+### final images:
+- Simple_fig.png ![Simple_fig](./Simple_fig.png)
+- Diag_fig.png ![Diag_fig](./Diag_fig.png)
+- Xor_fig.png ![Xor_fig](./Xor_fig.png)
+- Spiral_fig.png ![Spiral_fig](./Spiral_fig.png)

@@ -13,7 +13,7 @@ from minitorch import (
     operators,
 )
 
-from .strategies import assert_close, small_floats
+from tests.strategies import assert_close, small_floats
 
 
 @composite
